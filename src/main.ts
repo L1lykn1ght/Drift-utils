@@ -12,8 +12,8 @@ import { getUSDCAmount, getMarketInfo } from "./lib"
 
 
 // Discord Webhook URL
-const webhookURL1 = process.env.discordWebhook1!
-const webhookURL2 = process.env.discordWebhook2!
+const webhookURL1 = process.env.discordWebhook1
+const webhookURL2 = process.env.discordWebhook2
 
 // ccxt FTX client
 const client = new ftx({
@@ -22,11 +22,11 @@ const client = new ftx({
 })
 
 // solana config
-const connection = new Connection(process.env.RPCendpoint!)
+const connection = new Connection(process.env.RPCendpoint)
 const pythClient= new PythClient(connection)
 
 const keypair = Keypair.fromSecretKey(
-	Uint8Array.from(JSON.parse(process.env.secretKey!))
+	Uint8Array.from(JSON.parse(process.env.secretKey))
 )
 const wallet = new Wallet(keypair)
 const sdkConfig = initialize({ env: 'mainnet-beta' })
