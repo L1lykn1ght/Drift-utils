@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@drift-labs/sdk": "^0.1.23-master.0",
+    "@solana/web3.js": "^1.35.1",
+    "axios": "^0.26.0",
+    "ccxt": "^1.74.38",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21"
+  }
+}
