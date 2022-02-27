@@ -105,7 +105,7 @@ export const getMarketInfo = async (URL: string, clearingHouse: ClearingHouse, p
 						let feePool = Math.round(tmpFeePool * 100) / 100
 				
 						fields.push({
-							name: 'Drift',
+							name: token + ' Drift',
 							value: String(fundingRateDrift) + '%',
 							inline: true
 						})
