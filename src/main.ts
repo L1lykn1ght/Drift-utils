@@ -1,5 +1,5 @@
 require('dotenv').config()
-import { ftx } from "ccxt"
+import { ftx, binanceusdm } from "ccxt"
 import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 import {
     Wallet,
@@ -16,9 +16,15 @@ const webhookURL1 = process.env.discordWebhook1
 const webhookURL2 = process.env.discordWebhook2
 
 // ccxt FTX client
-const client = new ftx({
-    apiKey: process.env.apiKey,
-	secret: process.env.secret
+const ftxClient = new ftx({
+    apiKey: process.env.ftxApiKey,
+	secret: process.env.ftxSecret
+})
+
+// ccxt Binance client
+const binanceClient = new binanceusdm({
+    apiKey: process.env.binanceApiKey,
+    secret: process.env.binanceSecret
 })
 
 // solana config
@@ -46,8 +52,8 @@ const main = async () => {
     const user = ClearingHouseUser.from(clearingHouse, wallet.publicKey)
 	await user.subscribe()
 
-    getUSDCAmount(webhookURL1, user, client)
-    getMarketInfo(webhookURL2, clearingHouse, pythClient, client)
+    getUSDCAmount(webhookURL1, user, binanceClient)
+    getMarketInfo(webhookURL2, clearingHouse, pythClient, binanceClient)
 }
 
 
