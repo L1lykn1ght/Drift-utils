@@ -125,7 +125,7 @@ export const getMarketInfo = async (URL: string, clearingHouse: ClearingHouse, p
 						let marketAccount = clearingHouse.getMarket(market.marketIndex)
 				
 						let tmpFundingRateDrift = convertToNumber(
-							await calculateEstimatedFundingRate(marketAccount, await pythClient.getPriceData(marketAccount.amm.oracle), new BN(1), "interpolated")
+							await calculateEstimatedFundingRate(marketAccount, await pythClient.getOraclePriceData(marketAccount.amm.oracle), new BN(1), "interpolated")
 						)
 						let driftFundingRate = Math.round(tmpFundingRateDrift * 10000) / 10000
 				
