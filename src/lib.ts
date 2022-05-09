@@ -87,16 +87,21 @@ export const getMarketInfo = async (URL: string, clearingHouse: ClearingHouse, p
 	
 	switch (client.name) {
 		case 'FTX':
-			tokenLists = [
-				['SOL', 'LUNA', 'AVAX', 'MATIC', 'ATOM'],
-				['DOT', 'ADA', 'ALGO', 'FTT', 'LTC'],
-			]
+			tokenLists = [[
+				'SOL', 'BTC', 'ETH', 'LUNA', 'AVAX',
+				'BNB', 'MATIC', 'ATOM', 'DOT', 'ADA',
+				'ALGO', 'FTT'
+			]]
 			break
 		case 'Binance USDⓈ-M':
-			tokenLists = [
-				['SOL', 'LUNA', 'AVAX', 'MATIC', 'ATOM'],
-				['DOT', 'ADA', 'ALGO', 'LTC'],
-			]
+			tokenLists = [[
+				'SOL', 'BTC', 'ETH', 'LUNA', 'AVAX',
+				'BNB', 'MATIC', 'ATOM', 'DOT', 'ADA',
+				'ALGO', 'FTT', 'LTC', 'XRP', 'APE'
+			], [
+				'DOGE', 'NEAR', 'SRM', 'GMT', 'CRV',
+				'FTM'
+			]]
 			break
 	}
 
@@ -105,6 +110,7 @@ export const getMarketInfo = async (URL: string, clearingHouse: ClearingHouse, p
 			try {
 				for (let tokenList of tokenLists) {
 					let fields: Fields[] = new Array(0)
+					let arbChanceToken = ''
 
 					for (let token of tokenList) {
 						let symbol: string
@@ -118,21 +124,28 @@ export const getMarketInfo = async (URL: string, clearingHouse: ClearingHouse, p
 								break
 						}
 
+						/*
 						let info = await client.fetchFundingRate(symbol)
 						let cexFundingRate = Math.round(100 * info.fundingRate * 10000) / 10000
+						*/
 
 						let market = Markets.find((market) => market.baseAssetSymbol === token)
 						let marketAccount = clearingHouse.getMarket(market.marketIndex)
 				
 						let tmpFundingRateDrift = convertToNumber(
-							await calculateEstimatedFundingRate(marketAccount, await pythClient.getOraclePriceData(marketAccount.amm.oracle), new BN(1), "interpolated")
+							await calculateEstimatedFundingRate(marketAccount)
 						)
 						let driftFundingRate = Math.round(tmpFundingRateDrift * 10000) / 10000
+
+						if (Math.abs(driftFundingRate) >= 0.0075) {
+							arbChanceToken += token + ' '
+						}
 				
 						let tmpFeePool = convertToNumber(marketAccount.amm.totalFeeMinusDistributions, QUOTE_PRECISION)
 							- convertToNumber(marketAccount.amm.totalFee, QUOTE_PRECISION) / 2
 						let feePool = Math.round(tmpFeePool * 100) / 100
 
+						/*
 						fields.push({
 							name: 'CEX',
 							value: String(cexFundingRate) + '%',
@@ -144,20 +157,30 @@ export const getMarketInfo = async (URL: string, clearingHouse: ClearingHouse, p
 							value: String(driftFundingRate) + '%',
 							inline: true
 						})
+						*/
 				
 						fields.push({
-							name: 'Fee Pool',
+							name: token,
 							value: String(feePool) + ' USD',
 							inline: true
 						})
 					}
 				
 					let postData = {
-						username: 'Market Info',
+						username: 'Fee Pool',
 						embeds: [{fields}]
 					}
 				
 					await axios.post(URL, postData)
+
+					if (arbChanceToken != '') {
+						let postData = {
+							username: 'Arb Chance Token',
+							content : arbChanceToken + 'is now Arbitrage Chance!'
+						}
+
+						await axios.post(URL, postData)
+					}
 				}
 
 				break
